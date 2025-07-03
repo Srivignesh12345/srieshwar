@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
+      background-color: #f9f9f9;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -15,7 +15,7 @@
     }
 
     .flames-container {
-      background-color: #ffffff;
+      background-color: #fff;
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -23,12 +23,11 @@
       text-align: center;
     }
 
-    .flames-container h2 {
-      margin-bottom: 20px;
+    h2 {
       color: #e91e63;
     }
 
-    .flames-container input[type="text"] {
+    input[type="text"] {
       width: 90%;
       padding: 10px;
       margin: 10px 0;
@@ -36,7 +35,7 @@
       border: 1px solid #ccc;
     }
 
-    .flames-container input[type="submit"] {
+    input[type="submit"] {
       width: 95%;
       padding: 10px;
       background-color: #e91e63;
@@ -44,11 +43,17 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 10px;
     }
 
-    .flames-container input[type="submit"]:hover {
+    input[type="submit"]:hover {
       background-color: #c2185b;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
     }
   </style>
 </head>
@@ -56,12 +61,63 @@
 
   <div class="flames-container">
     <h2>FLAMES Love Calculator</h2>
-    <form action="https://getform.io/f/axoynkmb" method="POST">
-      <input type="text" name="your_name" placeholder="Your Name" required><br>
-      <input type="text" name="crush_name" placeholder="Crush's Name" required><br>
-      <input type="submit" value="Submit ❤️">
+    <form id="flamesForm">
+      <input type="text" id="your_name" name="your_name" placeholder="Your Name" required><br>
+      <input type="text" id="crush_name" name="crush_name" placeholder="Crush's Name" required><br>
+      <input type="submit" value="Calculate ❤️">
     </form>
+    <div id="result"></div>
   </div>
+
+  <script>
+    const form = document.getElementById('flamesForm');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name1 = document.getElementById('your_name').value.toLowerCase().replace(/\s/g, '');
+      const name2 = document.getElementById('crush_name').value.toLowerCase().replace(/\s/g, '');
+
+      if (!name1 || !name2) {
+        resultDiv.innerText = 'Please enter both names.';
+        return;
+      }
+
+      let temp1 = name1;
+      let temp2 = name2;
+
+      for (let char of name1) {
+        if (temp2.includes(char)) {
+          temp1 = temp1.replace(char, '');
+          temp2 = temp2.replace(char, '');
+        }
+      }
+
+      const count = temp1.length + temp2.length;
+      const flames = ['Friends', 'Love', 'Affection', 'Marriage', 'Enemies', 'Siblings'];
+      let index = 0;
+
+      while (flames.length > 1) {
+        index = (index + count - 1) % flames.length;
+        flames.splice(index, 1);
+      }
+
+      resultDiv.innerText = `Result: ${flames[0]} 💖`;
+
+      // Send data to Getform
+      fetch('https://getform.io/f/axoynkmb', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          your_name: document.getElementById('your_name').value,
+          crush_name: document.getElementById('crush_name').value
+        })
+      }).catch(error => {
+        console.error('Form submission failed:', error);
+      });
+    });
+  </script>
 
 </body>
 </html>
